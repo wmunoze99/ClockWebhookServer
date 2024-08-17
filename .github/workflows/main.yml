@@ -1,0 +1,28 @@
+name: Deploy backend
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up cloudflare
+        run: wget -q https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb && dpkg -i cloudflared-linux-amd64.deb
+
+      - name: Prepare deploy
+        run: |
+          apt-get update -qq
+          apt-get install -qq git wget
+          'which ssh-agent || ( apt-get install -qq openssh-client openssh-known-hosts )'
+          eval $(ssh-agent -s)
+          mkdir ~/.ssh
+          touch ~/.ssh/known_hosts
+          cat ${{ SSH_KEY }} > ~/.ssh/id_rsa
+          chmod 400 ~/.ssh/id_rsa
+          scp -o StrictHostKeyChecking=accept-new -o ProxyCommand="cloudflared access ssh --hostname %h --id ${{ secrets.CLOUDFLARE_ID }} --secret ${{ secrets.CLOUDFLARE_SECRET }}" -i ~/.ssh/id_rsa /path/to/local/file wmunoze@private.willmunoz.dev:~
+          ssh -tt -o StrictHostKeyChecking=accept-new -o ProxyCommand="cloudflared access ssh --hostname %h --id ${{ secrets.CLOUDFLARE_ID }} --secret ${{ secrets.CLOUDFLARE_SECRET }}" -i ~/.ssh/id_rsa wmunoze@private.willmunoze.dev "pm2 restart 0"
