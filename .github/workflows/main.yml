@@ -24,7 +24,7 @@ jobs:
           eval $(ssh-agent -s)
           mkdir ~/.ssh
           touch ~/.ssh/known_hosts
-          echo ${{ secrets.SSH_KEY }} > ~/.ssh/id_rsa
+          echo ${{ secrets.SSH_KEY }} > ~/.ssh/id_rsa.pub
           chmod 400 ~/.ssh/id_rsa
           scp -o StrictHostKeyChecking=accept-new -o ProxyCommand="cloudflared access ssh --hostname %h --id ${{ secrets.CLOUDFLARE_ID }} --secret ${{ secrets.CLOUDFLARE_SECRET }}" -i ~/.ssh/id_rsa /path/to/local/file wmunoze@private.willmunoz.dev:~
           ssh -tt -o StrictHostKeyChecking=accept-new -o ProxyCommand="cloudflared access ssh --hostname %h --id ${{ secrets.CLOUDFLARE_ID }} --secret ${{ secrets.CLOUDFLARE_SECRET }}" -i ~/.ssh/id_rsa wmunoze@private.willmunoze.dev "pm2 restart 0"
