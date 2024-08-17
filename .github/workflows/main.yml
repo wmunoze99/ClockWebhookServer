@@ -26,5 +26,6 @@ jobs:
           touch ~/.ssh/known_hosts
           echo ${{ secrets.SSH_KEY }} > ~/.ssh/id_rsa
           chmod 400 ~/.ssh/id_rsa
-          scp -o StrictHostKeyChecking=accept-new -o ProxyCommand="cloudflared access ssh --hostname %h --id ${{ secrets.CLOUDFLARE_ID }} --secret ${{ secrets.CLOUDFLARE_SECRET }}" -i ~/.ssh/id_rsa . wmunoze@private.willmunoz.dev:~
+          ls
+          scp -o StrictHostKeyChecking=accept-new -o ProxyCommand="cloudflared access ssh --hostname %h --id ${{ secrets.CLOUDFLARE_ID }} --secret ${{ secrets.CLOUDFLARE_SECRET }}" -i ~/.ssh/id_rsa . wmunoze@private.willmunoz.dev:~/clockServer/
           ssh -tt -o StrictHostKeyChecking=accept-new -o ProxyCommand="cloudflared access ssh --hostname %h --id ${{ secrets.CLOUDFLARE_ID }} --secret ${{ secrets.CLOUDFLARE_SECRET }}" -i ~/.ssh/id_rsa wmunoze@private.willmunoze.dev "pm2 restart 0"
